@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Missão Célula — 7 Erros</title>
+  <style>
+    :root { --ink:#19334c; --violet:#7047c7; --mint:#31b9a9; --paper:#fffdf7; --warning:#f5b61b; }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; font-family:ui-rounded, "Nunito", system-ui, sans-serif; color:var(--ink); background:linear-gradient(135deg,#e8f9f6,#f6efff 55%,#fff4d9); }
+    main { width:min(1280px,94vw); margin:0 auto; padding:28px 0 42px; }
+    header { display:flex; align-items:flex-start; justify-content:space-between; gap:22px; margin-bottom:22px; }
+    h1 { margin:0; font-size:clamp(1.8rem,4vw,3.25rem); letter-spacing:-.055em; }
+    .subtitle { margin:7px 0 0; max-width:700px; font-size:1.05rem; line-height:1.45; }
+    .score { min-width:160px; padding:14px 18px; text-align:center; border-radius:18px; background:#fff; box-shadow:0 8px 24px #3332; }
+    .score strong { display:block; color:var(--violet); font-size:1.8rem; line-height:1; }
+    .score span { font-size:.8rem; font-weight:800; text-transform:uppercase; letter-spacing:.07em; }
+    .instruction { padding:13px 17px; border-radius:14px; background:#173c5b; color:#fff; font-weight:700; text-align:center; margin-bottom:22px; }
+    .board { display:grid; grid-template-columns:1fr 1fr; gap:22px; }
+    .card { overflow:hidden; border:4px solid #fff; border-radius:24px; background:#fff; box-shadow:0 12px 30px #31556525; }
+    .label { padding:11px 16px; font-weight:900; font-size:1.05rem; letter-spacing:.02em; background:#fff; }
+    .label i { display:inline-block; width:11px; height:11px; border-radius:99px; margin-right:8px; background:var(--mint); }
+    .altered .label i { background:#f3576d; }
+    .scene { position:relative; aspect-ratio:1; overflow:hidden; touch-action:manipulation; }
+    .scene img { width:100%; height:100%; display:block; object-fit:cover; user-select:none; -webkit-user-drag:none; }
+    .altered .scene { cursor:crosshair; }
+    .change { position:absolute; pointer-events:none; }
+    /* Divergências visuais, posicionadas como porcentagens da arte quadrada. */
+    .nucleus { left:21%; top:26%; width:34%; height:33%; border-radius:50%; background:radial-gradient(circle at 50% 51%,#7dd57d 0 15%,#b8f09a 17% 54%,#55a94f 56% 60%,transparent 61%); opacity:.94; }
+    .mito-blue { left:58.5%; top:11%; width:22%; height:17%; border:7px solid #2669db; border-radius:50%; background:#55bde9; transform:rotate(25deg); box-shadow:inset 0 0 0 4px #a3e8ff; }
+    .mito-blue:after { content:""; position:absolute; inset:27% 15%; border-radius:45%; border:5px solid #fff; border-left:0; border-right:0; opacity:.7; }
+    .golgi-mask { left:54%; top:52%; width:37%; height:28%; border-radius:46% 42% 45% 42%; background:#ffcfa8; box-shadow:0 0 14px 8px #ffcfa8; }
+    .lysosome-purple { left:73%; top:27%; width:13%; height:12%; border-radius:50%; background:radial-gradient(circle,#ad74f2 0 10%,#7540b6 12% 75%,#d2a9ff 77%); border:4px solid #61319c; }
+    .membrane-gap { left:38%; top:1%; width:22%; height:7%; background:#fff8df; border-radius:0 0 50% 50%; transform:rotate(-2deg); }
+    .extra-vesicle { left:6%; top:41%; width:11%; height:11%; border-radius:50%; background:radial-gradient(circle at 35% 27%,#defaff,#268ee1 40%,#1455ae 75%); border:3px solid #0d60b7; box-shadow:0 4px 8px #2453a655; }
+    .ribosome-mask { left:14%; top:16%; width:16%; height:14%; border-radius:50%; background:#ffcea8; opacity:.92; }
+    .hotspot { position:absolute; width:13%; height:13%; border:0; background:transparent; border-radius:50%; cursor:crosshair; z-index:5; }
+    .hotspot:focus-visible { outline:4px solid #173c5b; outline-offset:2px; }
+    .hotspot.found { pointer-events:none; border:4px solid #fbd42b; box-shadow:0 0 0 3px #8d4ac8,0 0 16px #fbd42b; animation:pop .28s ease-out; }
+    .hotspot.found:after { content:"✓"; position:absolute; left:50%; top:50%; transform:translate(-50%,-54%); color:#fff; font-size:2rem; font-weight:900; text-shadow:0 2px 3px #4b2585; }
+    @keyframes pop { from{transform:scale(.4)} to{transform:scale(1)} }
+    .feedback { min-height:32px; margin:18px 0 0; text-align:center; font-weight:800; font-size:1.1rem; }
+    .feedback.bad { color:#b53552; } .feedback.good { color:#246a58; }
+    .help { margin-top:24px; padding:18px; border-radius:18px; background:#ffffffc9; line-height:1.5; }
+    .help summary { cursor:pointer; font-weight:900; }
+    .help ol { margin:10px 0 0; padding-left:22px; }
+    .win { display:none; margin-top:18px; padding:17px; border-radius:18px; color:#fff; text-align:center; background:linear-gradient(105deg,#7141c4,#2ea99d); font-weight:900; font-size:1.15rem; }
+    .win.show { display:block; }
+    @media (max-width:760px) { header { flex-direction:column; } .score { align-self:stretch; } .board { grid-template-columns:1fr; } main { padding-top:18px; } }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div><h1>Missão Célula</h1><p class="subtitle">Encontre as sete mudanças na célula à direita. Observe organelas, cores e estruturas — cada acerto revela uma pista de biologia.</p></div>
+      <div class="score"><strong><span id="count">0</span> / 7</strong><span>erros encontrados</span></div>
+    </header>
+    <div class="instruction">Clique somente na imagem divergente. Se quiser, use o botão “Pistas” depois de tentar.</div>
+    <section class="board" aria-label="Jogo dos sete erros">
+      <article class="card"><div class="label"><i></i> Célula de referência</div><div class="scene"><img src="celula-referencia.png" alt="Ilustração correta do interior de uma célula animal"></div></article>
+      <article class="card altered"><div class="label"><i></i> Célula com diferenças</div>
+        <div class="scene" id="game" aria-label="Imagem interativa com sete diferenças">
+          <img src="celula-divergente-distorcoes.png" alt="Ilustração do interior de uma célula animal com sete diferenças de forma para encontrar">
+          <button class="hotspot" data-clue="O núcleo redondo ficou com formato de flor." aria-label="Diferença 1" style="left:22%;top:25%;width:36%;height:36%"></button>
+          <button class="hotspot" data-clue="A mitocôndria arredondada virou um triângulo." aria-label="Diferença 2" style="left:59%;top:10%;width:24%;height:22%"></button>
+          <button class="hotspot" data-clue="As pilhas do complexo de Golgi viraram uma espiral." aria-label="Diferença 3" style="left:58%;top:52%;width:35%;height:32%"></button>
+          <button class="hotspot" data-clue="O lisossomo redondo virou uma estrela." aria-label="Diferença 4" style="left:72%;top:27%;width:16%;height:16%"></button>
+          <button class="hotspot" data-clue="A membrana lisa ganhou um trecho em zigue-zague." aria-label="Diferença 5" style="left:42%;top:0%;width:20%;height:11%"></button>
+          <button class="hotspot" data-clue="Uma vesícula redonda virou um quadrado azul." aria-label="Diferença 6" style="left:7%;top:37%;width:13%;height:13%"></button>
+          <button class="hotspot" data-clue="Um trecho curvo do retículo endoplasmático ficou angular." aria-label="Diferença 7" style="left:15%;top:16%;width:19%;height:20%"></button>
+        </div>
+      </article>
+    </section>
+    <p class="feedback" id="feedback" aria-live="polite">Boa investigação! Onde está a primeira diferença?</p>
+    <div class="win" id="win">🎉 Missão concluída! Você encontrou todas as sete diferenças.</div>
+    <details class="help"><summary>Pistas e revisão rápida</summary><ol><li>Compare o formato do núcleo no centro.</li><li>Observe a forma da mitocôndria no alto à direita.</li><li>Veja o desenho do complexo de Golgi.</li><li>Compare a forma da vesícula verde à direita.</li><li>Veja o contorno turquesa da membrana.</li><li>Procure uma vesícula azul fora do padrão redondo.</li><li>Observe os tubos azuis no alto à esquerda.</li></ol></details>
+  </main>
+  <script>
+    const count = document.querySelector('#count'), feedback = document.querySelector('#feedback'), win = document.querySelector('#win');
+    let found = 0;
+    document.querySelectorAll('.hotspot').forEach(spot => spot.addEventListener('click', () => {
+      if (spot.classList.contains('found')) return;
+      spot.classList.add('found'); found++; count.textContent = found;
+      feedback.textContent = '✓ ' + spot.dataset.clue; feedback.className = 'feedback good';
+      if (found === 7) win.classList.add('show');
+    }));
+    document.querySelector('#game').addEventListener('click', event => {
+      if (event.target.closest('.hotspot')) return;
+      feedback.textContent = 'Ainda não — compare as duas imagens com calma.'; feedback.className = 'feedback bad';
+    });
+  </script>
+</body>
+</html>
